@@ -146,7 +146,7 @@ openInvitation.addEventListener("click", function (event) {
   event.preventDefault();
   if (invitationOpened) return;
   invitationOpened = true;
-
+  document.getElementById("bgMusic").play();
   html.classList.remove("invitation-locked");
   body.classList.remove("invitation-locked");
   body.removeAttribute("aria-busy");
@@ -168,5 +168,6 @@ function tick(){
 }
 tick(); setInterval(tick,1000);
 </script>
+<audio id="bgMusic" src="ganpati-song.mp3" preload="auto" loop></audio>
 </body>
 </html>
