@@ -35,6 +35,44 @@ h2{font:500 42px "Cormorant Garamond",serif;letter-spacing:3px;margin:10px 0 35p
 .venue p{font-size:20px;line-height:1.6;color:#614300}.venue-address{color:#4f2b1c;margin-top:20px;line-height:1.5;}.count{display:flex;gap:10px;margin-top:25px}.time{border:1px solid #c9a77c;padding:15px 10px;min-width:68px}.time b{display:block;font:28px "Cormorant Garamond",serif;color:#60311b}.time span{font-size:9px;letter-spacing:1px;color:#614300}
 .final{background:#fff4df}footer{padding:25px;color:#7e3d0f;font-size:10px;letter-spacing:2px}.photo img{width:100%;height:100%;object-fit:cover;display:block}
 @media(max-width:480px){section{padding:42px 18px}.event-grid{grid-template-columns:1fr 1fr}.count{gap:5px}.time{min-width:62px;padding:12px 6px}.time b{font-size:24px}section:not(.cover)::before,section:not(.cover)::after{width:160px;height:160px}}
+.scroll-prompt{
+  position:fixed;
+  left:50%;
+  bottom:22px;
+  transform:translateX(-50%);
+  z-index:9000;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  color:#7e3d0f;
+  font-size:9px;
+  letter-spacing:3px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 500ms ease;
+}
+
+.scroll-prompt.show{
+  opacity:.9;
+}
+
+.scroll-prompt .arrow{
+  font-size:18px;
+  line-height:1;
+  animation:scrollArrow 1.4s ease-in-out infinite;
+}
+
+@keyframes scrollArrow{
+  0%,100%{
+    transform:translateY(0);
+    opacity:.55;
+  }
+  50%{
+    transform:translateY(6px);
+    opacity:1;
+  }
+}
 </style>
 <style>
 /* Opening screen: the page cannot scroll until the invitation is opened. */
@@ -68,6 +106,10 @@ body.invitation-locked { touch-action: none; overscroll-behavior: none; }
   <a class="btn" href="#invitation" id="openInvitation">Open Invitation</a>
 </section>
 
+  <div class="scroll-prompt" id="scrollPrompt">
+  <span>SCROLL</span>
+  <span class="arrow">↓</span>
+</div>
 <section id="invitation" class="events">
   <div class="kicker">✦ Events ✦</div>
   <h2>Celebration</h2>
@@ -151,13 +193,25 @@ openInvitation.addEventListener("click", function (event) {
   body.classList.remove("invitation-locked");
   body.removeAttribute("aria-busy");
   cover.classList.add("opened");
+  document.getElementById("scrollPrompt").classList.add("show");
 
   // Scroll only after the button is clicked.
   setTimeout(() => {
     document.getElementById("invitation").scrollIntoView({ behavior: "smooth", block: "start" });
   }, 180);
 });
+let scrollPromptReady = false;
 
+window.addEventListener("scroll", function () {
+  if (!scrollPromptReady) return;
+
+  document.getElementById("scrollPrompt").classList.remove("show");
+  scrollPromptReady = false;
+}, { passive: true });
+
+setTimeout(function () {
+  scrollPromptReady = true;
+}, 700);
 const target = new Date("2026-09-14T00:00:00+05:30").getTime();
 function tick(){
   const now=Date.now(), diff=Math.max(0,target-now);
